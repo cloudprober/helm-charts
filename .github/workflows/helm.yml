@@ -68,4 +68,4 @@ jobs:
           mkdir -p charts
           cd charts; helm package ../../cloudprober/.; cd -
           helm repo index .
-          git status
+          git add repo/*
