@@ -28,6 +28,9 @@ jobs:
           sed -i "s/appVersion: .*$/appVersion: \'${CLOUDPROBER_VERSION}\'/" cloudprober/Chart.yaml
           echo ">> New Chart.yaml"
           cat cloudprober/Chart.yaml
+          echo "-----------------"
+          echo ">> Chart.yaml diff"
+          git diff
 
       - name: Commit and push Chart.yaml if it changed
         if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags')
