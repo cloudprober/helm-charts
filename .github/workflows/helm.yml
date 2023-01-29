@@ -55,7 +55,7 @@ jobs:
           git commit -m "[automated] Update app version" || exit 0
           git push
 
-      - name: Package chart
+      - name: Package chart and release
         if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags')
         run: |-
           sed -i "s/version: .*$/version: ${CHART_VERSION}/" cloudprober/Chart.yaml
@@ -68,3 +68,4 @@ jobs:
           git config user.name "Manu Garg"
           git config user.email "manugarg@gmail.com"
           git commit -m "[automated] Update helm charts repo" || exit 0
+          git push
