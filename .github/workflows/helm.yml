@@ -58,12 +58,10 @@ jobs:
       - name: Package chart and release
         if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags')
         run: |-
-          sed -i "s/version: .*$/version: ${CHART_VERSION}/" cloudprober/Chart.yaml
           mkdir -p docs
           cd docs
-          mkdir -p charts
-          cd charts; helm package ../../cloudprober/.; cd -
-          helm repo index .
+          helm package ../../cloudprober/. --version=${CHART_VERSION} -d packages
+          helm repo index . --url https://helm-charts.cloudprober.org
           git add *
           git config user.name "Manu Garg"
           git config user.email "manugarg@gmail.com"
