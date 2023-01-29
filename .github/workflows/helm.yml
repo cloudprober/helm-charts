@@ -26,15 +26,15 @@ jobs:
         id: go
 
       - name: Set cloudprober version for non-release
-        run: |
+        run: |-
           LAST_VERSION=$(go list -m -versions github.com/cloudprober/cloudprober | tr ' ' '\n' | tac | head -1)
           echo "CLOUDPROBER_VERSION=${LAST_VERSION}" >> $GITHUB_ENV
 
       - name: Set up Helm
         uses: azure/setup-helm@v3
 
-      - name: Update chart version
-        run: |
+      - name: Compute chart version
+        run: |-
           baseVersion=$(sed -n '/version: /s/version: //p' cloudprober/Chart.yaml)
           echo ">> Base version: $baseVersion"
           bv=( ${baseVersion//./ } )
@@ -45,15 +45,24 @@ jobs:
 
           newVersion=$((${bv[0]} + ${cv[0]})).$((${bv[1]} + ${cv[1]})).$((${bv[2]} + ${cv[2]}))
           echo ">> New version: $newVersion"
+          echo "CHART_VERSION=${newVersion}" >> $GITHUB_ENV
 
-          sed -i "s/version: .*$/version: $newVersion/" cloudprober/Chart.yaml
           sed -i "s/appVersion: .*$/appVersion: \'${CLOUDPROBER_VERSION}\'/" cloudprober/Chart.yaml
 
           echo ">> New Chart.yaml"
           cat cloudprober/Chart.yaml
 
+      - name: Commit and push Chart.yaml if it changed
+        run: |-
+          git config user.name "Automated"
+          git config user.email "actions@users.noreply.github.com"
+          git add cloudprober/Chart.yaml
+          git commit -m "Update app version" || exit 0
+          git push
+
       - name: Package chart
-        run: |
+        run: |-
+          sed -i "s/version: .*$/version: ${CHART_VERSION}/" cloudprober/Chart.yaml
           mkdir -p repo
           cd repo
           mkdir -p charts
