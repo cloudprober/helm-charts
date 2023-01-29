@@ -1,0 +1,38 @@
+name: Check for new Cloudprober release every 5 min
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+
+jobs:
+  update-chart-yaml:
+    name: Update chart version and release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo hosting code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        id: go
+
+      - name: Get cloudprober version
+        run: |-
+          LAST_VERSION=$(go list -m -versions github.com/cloudprober/cloudprober | tr ' ' '\n' | tac | head -1)
+          echo "CLOUDPROBER_VERSION=${LAST_VERSION}" >> $GITHUB_ENV
+
+      - name: Update app version in Chart.yaml
+        run: |-
+          sed -i "s/appVersion: .*$/appVersion: \'${CLOUDPROBER_VERSION}\'/" cloudprober/Chart.yaml
+          echo ">> New Chart.yaml"
+          cat cloudprober/Chart.yaml
+
+      - name: Commit and push Chart.yaml if it changed
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags')
+        run: |-
+          git config user.name "Manu Garg"
+          git config user.email "manugarg@gmail.com"
+          git add cloudprober/Chart.yaml
+          git commit -m "[automated] Update app version" || exit 0
+          git push
