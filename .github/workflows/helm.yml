@@ -60,7 +60,7 @@ jobs:
         run: |-
           mkdir -p docs
           cd docs
-          helm package ../../cloudprober/. --version=${CHART_VERSION} -d packages
+          helm package ../cloudprober/. --version=${CHART_VERSION} -d packages
           helm repo index . --url https://helm-charts.cloudprober.org
           git add *
           git config user.name "Manu Garg"
