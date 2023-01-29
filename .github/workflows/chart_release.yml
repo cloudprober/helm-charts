@@ -26,7 +26,7 @@ jobs:
           appVersion=$(sed -n '/appVersion: /s/appVersion: //p' cloudprober/Chart.yaml)
           echo ">> App version: $appVersion"
           cpVersion=${appVersion/v/}
-          cpVersion=${echo $cpVersion | tr -d "'"}
+          cpVersion=$(echo $cpVersion | tr -d "'")
           echo ">> Cloudprober version: $cpVersion"
           cv=( ${cpVersion//./ } )
 
