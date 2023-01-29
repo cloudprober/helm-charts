@@ -55,11 +55,13 @@ jobs:
           git commit -m "[automated] Update app version" || exit 0
           git push
 
+      - name: Setup repo worktree
+        run: git worktree add repo gh-pages
+
       - name: Package chart and release
         if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags')
         run: |-
-          mkdir -p docs
-          cd docs
+          cd repo
           helm package ../cloudprober/. --version=${CHART_VERSION} -d packages
           helm repo index . --url https://helm-charts.cloudprober.org
           git add *
