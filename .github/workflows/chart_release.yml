@@ -25,8 +25,8 @@ jobs:
 
           appVersion=$(sed -n '/appVersion: /s/appVersion: //p' cloudprober/Chart.yaml)
           echo ">> App version: $appVersion"
-          appVersion=${appVersion/v/}
-          cpVersion=${appVersion/'/}
+          cpVersion=${appVersion/v/}
+          cpVersion=${echo $cpVersion | tr -d "'"}
           echo ">> Cloudprober version: $cpVersion"
           cv=( ${cpVersion//./ } )
 
@@ -46,10 +46,12 @@ jobs:
           helm package ../cloudprober/. --version=${CHART_VERSION} -d packages
           helm repo index . --url https://helm-charts.cloudprober.org
           git add *
-          git config user.name "Manu Garg"
-          git config user.email "manugarg@gmail.com"
-          git commit -m "[automated] Update helm charts repo" || exit 0
+          git status
 
       - name: Push release
         if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags')
-        run: git push
+        run: |-
+          git config user.name "Manu Garg"
+          git config user.email "manugarg@gmail.com"
+          git commit -m "[automated] Update helm charts repo" || exit 0
+          git push
