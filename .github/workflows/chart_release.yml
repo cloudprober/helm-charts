@@ -12,6 +12,11 @@ jobs:
     name: Release chart
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repo hosting code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - name: Compute chart version
         run: |-
           baseVersion=$(sed -n '/version: /s/version: //p' cloudprober/Chart.yaml)
