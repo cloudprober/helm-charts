@@ -1,0 +1,57 @@
+name: Helm Chart Release
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - cloudprober/Chart.yaml
+  pull_request:
+
+jobs:
+  chart-release:
+    name: Release chart
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo hosting code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Compute chart version
+        run: |-
+          baseVersion=$(sed -n '/version: /s/version: //p' cloudprober/Chart.yaml)
+          echo ">> Base version: $baseVersion"
+          bv=( ${baseVersion//./ } )
+
+          appVersion=$(sed -n '/appVersion: /s/appVersion: //p' cloudprober/Chart.yaml)
+          echo ">> App version: $appVersion"
+          cpVersion=${appVersion/v/}
+          cpVersion=$(echo $cpVersion | tr -d "'")
+          echo ">> Cloudprober version: $cpVersion"
+          cv=( ${cpVersion//./ } )
+
+          newVersion=$((${bv[0]} + ${cv[0]})).$((${bv[1]} + ${cv[1]})).$((${bv[2]} + ${cv[2]}))
+          echo ">> New version: $newVersion"
+          echo "CHART_VERSION=${newVersion}" >> $GITHUB_ENV
+
+      - name: Setup repo worktree
+        run: git worktree add repo gh-pages
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+
+      - name: Package chart and build index
+        run: |-
+          cd repo
+          helm package ../cloudprober/. --version=${CHART_VERSION} -d packages
+          helm repo index . --url https://helm-charts.cloudprober.org
+          git add *
+          git status
+
+      - name: Push release
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags')
+        run: |-
+          git config user.name "Manu Garg"
+          git config user.email "manugarg@gmail.com"
+          git commit -m "[automated] Update helm charts repo" || exit 0
+          git push
