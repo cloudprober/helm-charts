@@ -1,14 +1,17 @@
 name: Helm Chart Release
-  on:
-    push:
-      branches:
-        - main
-      path:
-        - cloudprober/Chart.yaml
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - cloudprober/Chart.yaml
   pull_request:
 
-  jobs:
-    update-and-release:
+jobs:
+  chart-release:
+    name: Release chart
+    runs-on: ubuntu-latest
+    steps:
       - name: Compute chart version
         run: |-
           baseVersion=$(sed -n '/version: /s/version: //p' cloudprober/Chart.yaml)
