@@ -1,4 +1,4 @@
-name: Helm Chart Release
+name: Helm Chart Update
 on:
   push:
     branches:
@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  build-and-test:
+  update-and-release:
     name: Update chart version and release
     runs-on: ubuntu-latest
     steps:
@@ -49,10 +49,10 @@ jobs:
       - name: Commit and push Chart.yaml if it changed
         if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags')
         run: |-
-          git config user.name "Automated"
-          git config user.email "actions@users.noreply.github.com"
+          git config user.name "Manu Garg"
+          git config user.email "manugarg@gmail.com"
           git add cloudprober/Chart.yaml
-          git commit -m "Update app version" || exit 0
+          git commit -m "[automated] Update app version" || exit 0
           git push
 
       - name: Package chart
@@ -65,4 +65,6 @@ jobs:
           cd charts; helm package ../../cloudprober/.; cd -
           helm repo index .
           git add *
-          git status
+          git config user.name "Manu Garg"
+          git config user.email "manugarg@gmail.com"
+          git commit -m "[automated] Update helm charts repo" || exit 0
