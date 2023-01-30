@@ -44,7 +44,7 @@ jobs:
         run: |-
           cd repo
           helm package ../cloudprober/. --version=${CHART_VERSION} -d packages
-          helm repo index . --url https://helm-charts.cloudprober.org
+          helm repo index . --url https://helm.cloudprober.org
           git add *
           git status
 
