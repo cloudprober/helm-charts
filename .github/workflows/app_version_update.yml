@@ -1,4 +1,4 @@
-name: Check for new Cloudprober release every 5 min
+name: Check for new Cloudprober release
 on:
   schedule:
     - cron: '5 */4 * * *'
