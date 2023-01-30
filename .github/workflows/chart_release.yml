@@ -6,6 +6,7 @@ on:
     paths:
       - cloudprober/Chart.yaml
   pull_request:
+  workflow_dispatch:
 
 jobs:
   chart-release:
