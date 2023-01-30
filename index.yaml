@@ -3,12 +3,12 @@ entries:
   cloudprober:
   - apiVersion: v2
     appVersion: v0.12.2
-    created: "2023-01-29T10:46:04.832226981Z"
+    created: "2023-01-30T04:37:51.978949036Z"
     description: A Helm chart for Cloudprober
-    digest: 1ade74f0747d984cfa51cc872c343ca8b7c00c9096da04c77c57414f6ae5c73b
+    digest: 1e7edf136afc4fc2b6d04d1eca0a2359508654db1e11317a9de9b95ccc1cdaf2
     name: cloudprober
     type: application
     urls:
-    - https://helm-charts.cloudprober.org/packages/cloudprober-1.12.2.tgz
+    - https://helm.cloudprober.org/packages/cloudprober-1.12.2.tgz
     version: 1.12.2
-generated: "2023-01-29T10:46:04.831301483Z"
+generated: "2023-01-30T04:37:51.978268132Z"
