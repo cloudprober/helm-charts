@@ -4,7 +4,7 @@ description: A Helm chart for Cloudprober
 
 type: application
 
-version: 1.0.0
+version: 1.0.1
 
 # Cloudprober release version
 appVersion: 'v0.12.2'
