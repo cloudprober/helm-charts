@@ -16,7 +16,7 @@ config: |
   }
 
 # You can use this to provide cloudprober config over command line:
-# helm .. --set-file config_file=<path to cloudprober config>
+# helm .. --set-file configFile=<path to cloudprober config>
 configFile: ''
 
 imagePullSecrets: []
@@ -50,7 +50,7 @@ service:
   port: 8080
 
 serviceMonitor:
-  enabled: false
+  enabled: true
 
 ingress:
   enabled: false
