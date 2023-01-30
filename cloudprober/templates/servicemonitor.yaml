@@ -1,0 +1,16 @@
+{{- if .Values.serviceMonitor.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "cloudprober.fullname" . }}-monitor
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ include "cloudprober.fullname" . }}
+  namespaceSelector:
+    matchNames: 
+    - {{ .Release.Namespace }}
+  endpoints:
+  - interval: 10s
+    path: /metrics
+{{- end }}

@@ -49,6 +49,9 @@ service:
   type: ClusterIP
   port: 8080
 
+serviceMonitor:
+  enabled: false
+
 ingress:
   enabled: false
   className: ''
