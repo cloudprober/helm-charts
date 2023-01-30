@@ -1,22 +1,57 @@
-name: Helm Chart Release
+name: Helm Chart Lint and Release
 on:
   push:
     branches:
       - main
-    paths:
-      - cloudprober/Chart.yaml
   pull_request:
   workflow_dispatch:
 
 jobs:
-  chart-release:
-    name: Release chart
+  helm-lint:
+    name: Helm lint
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo hosting code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+      - name: Run helm lint
+        run: helm lint cloudprober/.
+
+  paths-filter:
+    name: Filter Chart.yaml
+    outputs:
+      charts_yaml_changing: ${{ steps.filter.outputs.chartYaml }}
+    runs-on: ubuntu-latest
+    needs: [helm-lint]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            chartYaml:
+              - 'cloudprober/Chart.yaml'
+
+  chart-release:
+    name: Release chart
+    runs-on: ubuntu-latest
+    needs: [paths-filter, helm-lint]
+    if: needs.paths-filter.outputs.charts_yaml_changing == 'true'
+    steps:
+      - name: Check out repo hosting code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            chartYaml:
+              - 'cloudprober/Chart.yaml'
 
       - name: Compute chart version
         run: |-
@@ -35,14 +70,12 @@ jobs:
           echo ">> New version: $newVersion"
           echo "CHART_VERSION=${newVersion}" >> $GITHUB_ENV
 
-      - name: Setup repo worktree
-        run: git worktree add repo gh-pages
-
       - name: Set up Helm
         uses: azure/setup-helm@v3
 
       - name: Package chart and build index
         run: |-
+          git worktree add repo gh-pages
           cd repo
           helm package ../cloudprober/. --version=${CHART_VERSION} -d packages
           helm repo index . --url https://helm.cloudprober.org
