@@ -1,4 +1,8 @@
-# Helm chart for Cloudprober
+# [Cloudprober](http://cloudprober.org) Helm Chart
+
+## Cloudprober source:
+
+https://github.com/cloudprober/cloudprober
 
 ## Chart source:
 
