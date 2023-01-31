@@ -32,6 +32,10 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ''
 
+# Create RBAC for read-only access to k8s resources.
+rbac:
+  create: true
+
 podSecurityContext:
   {}
   # fsGroup: 2000
