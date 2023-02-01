@@ -18,9 +18,9 @@ helm install cloudprober cloudprober/cloudprober -n cloudprober --create-namespa
 
 ## To add/update the Cloudprober config
 
-You can either add config directly in the `values.yaml`, or you can provide config on the command line through the  `--set-file` flag.
+You can either add config directly in the `values.yaml`, or you can provide config on the command line through the `--set-file` flag.
 
 ```
 helm upgrade --install cloudprober cloudprober/cloudprober \
-    --set-file configFile=~/monitoring/config/cloudprober.cfg -n cloudprober
+    --set-file config=~/monitoring/config/cloudprober.cfg -n cloudprober
 ```
