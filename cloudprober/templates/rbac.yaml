@@ -28,4 +28,5 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: {{ include "cloudprober.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
 {{end}}
