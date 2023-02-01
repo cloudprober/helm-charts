@@ -10,14 +10,13 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: null
 
+# You can either embed config here, or keep it in a separate file and provide
+# it at run-time, like this:
+# helm .. --set-file config=<path to cloudprober config>
 config: |
   surfacer {
     type: PROMETHEUS
   }
-
-# You can use this to provide cloudprober config over command line:
-# helm .. --set-file configFile=<path to cloudprober config>
-configFile: ''
 
 imagePullSecrets: []
 nameOverride: ''

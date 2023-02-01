@@ -4,8 +4,4 @@ metadata:
   name: {{ .Release.Name }}-configmap
 data:
   cloudprober.cfg: |
-  {{- if ne .Values.configFile "" -}}
-  {{- .Values.configFile | nindent 4}}
-  {{- else if ne .Values.config "" -}}
   {{- .Values.config | nindent 4}}
-  {{- end}}
