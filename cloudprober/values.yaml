@@ -18,6 +18,19 @@ config: |
     type: PROMETHEUS
   }
 
+# Example:
+# env:
+#  - name: SERVICE_TOKEN
+#    valueFrom:
+#      configMapKeyRef:
+#        name: cloudprober-secrets
+#        key: service_token
+
+# The name of a secret in the same kubernetes namespace which contains values
+# to be added to the environment (must be manually created). This can be useful
+# for auth tokens, etc.
+envFromSecret: ''
+
 imagePullSecrets: []
 nameOverride: ''
 fullnameOverride: ''
