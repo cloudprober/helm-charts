@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: cloudprober/cloudprober
+  repository: ghcr.io/cloudprober/cloudprober
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: null
