@@ -10,6 +10,17 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: null
 
+# configmap to use for the cloudprober config.
+# configMap name defaults to release name, but can be overridden here.
+# If create is true, a configMap is created from the config value, otherwise
+# an existing configMap is used.
+# One caveat with managing config map outside of helm charts is that you'll
+# need to manage the deployment restart yourself after updating the config
+# map.
+configMap:
+  name: ''
+  create: true
+
 # You can either embed config here, or keep it in a separate file and provide
 # it at run-time, like this:
 # helm .. --set-file config=<path to cloudprober config>

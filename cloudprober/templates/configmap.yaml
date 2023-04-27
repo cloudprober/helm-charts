@@ -1,7 +1,9 @@
+{{- if .Values.configMap.create -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-configmap
+  name: {{ include "cloudprober.fullname" . }}
 data:
   cloudprober.cfg: |
   {{- .Values.config | nindent 4}}
+{{- end }}
