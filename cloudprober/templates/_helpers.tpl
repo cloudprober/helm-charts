@@ -60,3 +60,15 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Retrieve configMap name from the name of the chart or the ConfigMap the user
+specified.
+*/}}
+{{- define "cloudprober.config-map.name" -}}
+{{- if .Values.configMap.name -}}
+{{- .Values.configMap.name }}
+{{- else -}}
+{{- include "cloudprober.fullname" . }}
+{{- end }}
+{{- end }}
