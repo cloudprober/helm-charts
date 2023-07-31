@@ -1,5 +1,15 @@
 apiVersion: v2
 name: cloudprober
+home: https://cloudprober.org
+
+sources:
+  - https://github.com/cloudprober/cloudprober
+
+maintainers:
+  - name: Manu Garg
+    email: manugarg@gmail.com
+    url: https://linkedin.com/in/manugarg
+
 description: A Helm chart for Cloudprober
 
 type: application
