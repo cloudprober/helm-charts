@@ -13,7 +13,7 @@ spec:
     metadata:
       annotations:
         {{- if $.Values.podAnnotations }}
-          {{ toYaml .Values.podAnnotations | nindent 8 }}
+          {{- toYaml .Values.podAnnotations | nindent 8 }}
         {{- end }}
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
