@@ -3,7 +3,24 @@ entries:
   cloudprober:
   - apiVersion: v2
     appVersion: v0.12.8
-    created: "2023-07-31T07:23:25.778321809Z"
+    created: "2023-08-15T16:04:47.23744529Z"
+    description: A Helm chart for Cloudprober
+    digest: bd0224f4fe8137c2af5cb81d6f749fc5b006cb9332e9a773366508652656a080
+    home: https://cloudprober.org
+    maintainers:
+    - email: manugarg@gmail.com
+      name: Manu Garg
+      url: https://linkedin.com/in/manugarg
+    name: cloudprober
+    sources:
+    - https://github.com/cloudprober/cloudprober
+    type: application
+    urls:
+    - https://helm.cloudprober.org/packages/cloudprober-1.12.15.tgz
+    version: 1.12.15
+  - apiVersion: v2
+    appVersion: v0.12.8
+    created: "2023-08-15T16:04:47.236886485Z"
     description: A Helm chart for Cloudprober
     digest: c53ae80bd052bf6b5f672cadb989059a7a12bb0208b798ab546369c033082b15
     home: https://cloudprober.org
@@ -20,7 +37,7 @@ entries:
     version: 1.12.14
   - apiVersion: v2
     appVersion: v0.12.6
-    created: "2023-07-31T07:23:25.776963397Z"
+    created: "2023-08-15T16:04:47.236309381Z"
     description: A Helm chart for Cloudprober
     digest: ed1020b89517af931b6f68e5ba0927ea65f3006477481384618a45039071ee9b
     name: cloudprober
@@ -30,7 +47,7 @@ entries:
     version: 1.12.12
   - apiVersion: v2
     appVersion: v0.12.6
-    created: "2023-07-31T07:23:25.776329892Z"
+    created: "2023-08-15T16:04:47.235779577Z"
     description: A Helm chart for Cloudprober
     digest: 657ffffa60a6fe495a842cabf9cbda22accf7217376c6b467d2e72600ec2f072
     name: cloudprober
@@ -40,7 +57,7 @@ entries:
     version: 1.12.11
   - apiVersion: v2
     appVersion: v0.12.5
-    created: "2023-07-31T07:23:25.775660186Z"
+    created: "2023-08-15T16:04:47.235289274Z"
     description: A Helm chart for Cloudprober
     digest: 592b7d7b7dcb65abfae1269df973a3d5f18cc5bb2bfd567e8cf196c4eaa79c01
     name: cloudprober
@@ -50,7 +67,7 @@ entries:
     version: 1.12.10
   - apiVersion: v2
     appVersion: v0.12.4
-    created: "2023-07-31T07:23:25.782011141Z"
+    created: "2023-08-15T16:04:47.24163802Z"
     description: A Helm chart for Cloudprober
     digest: 425fffe2340a8398350a05aeb5e305064d21ad01c2ff95e0265a51d6272077fc
     name: cloudprober
@@ -60,7 +77,7 @@ entries:
     version: 1.12.9
   - apiVersion: v2
     appVersion: v0.12.3
-    created: "2023-07-31T07:23:25.781552137Z"
+    created: "2023-08-15T16:04:47.240631813Z"
     description: A Helm chart for Cloudprober
     digest: df219f29840d5f5d80f8cbc0fd0a5f60b0d4511884493fdda348830bf8254762
     name: cloudprober
@@ -70,7 +87,7 @@ entries:
     version: 1.12.8
   - apiVersion: v2
     appVersion: v0.12.3
-    created: "2023-07-31T07:23:25.781092933Z"
+    created: "2023-08-15T16:04:47.240158009Z"
     description: A Helm chart for Cloudprober
     digest: 95859d3cee9e26431ffb3b093a3977b9a6d88390881a38856d0e07165429918a
     name: cloudprober
@@ -80,7 +97,7 @@ entries:
     version: 1.12.7
   - apiVersion: v2
     appVersion: v0.12.2
-    created: "2023-07-31T07:23:25.780621529Z"
+    created: "2023-08-15T16:04:47.239710106Z"
     description: A Helm chart for Cloudprober
     digest: 3ea9b8550ec7c0cb5ae012c4181ac80e3aab101eae4978c56abc9253ee62c74c
     name: cloudprober
@@ -90,7 +107,7 @@ entries:
     version: 1.12.6
   - apiVersion: v2
     appVersion: v0.12.2
-    created: "2023-07-31T07:23:25.780184225Z"
+    created: "2023-08-15T16:04:47.239272703Z"
     description: A Helm chart for Cloudprober
     digest: 2f8132fd714b18abca88ffd3934ecb6fedbd4a7644b5802591dbed02ff48d861
     name: cloudprober
@@ -100,7 +117,7 @@ entries:
     version: 1.12.5
   - apiVersion: v2
     appVersion: v0.12.2
-    created: "2023-07-31T07:23:25.779719021Z"
+    created: "2023-08-15T16:04:47.238792599Z"
     description: A Helm chart for Cloudprober
     digest: c9606aeb7f6cf7e7dc4703482ad5394408851f449dca6a86c43d7fc18bf627a8
     name: cloudprober
@@ -110,7 +127,7 @@ entries:
     version: 1.12.4
   - apiVersion: v2
     appVersion: v0.12.2
-    created: "2023-07-31T07:23:25.779290817Z"
+    created: "2023-08-15T16:04:47.238339496Z"
     description: A Helm chart for Cloudprober
     digest: b2336e3a89e807e063f1d9bf3da76c497a406216722bca3e1b29840e783018ff
     name: cloudprober
@@ -120,7 +137,7 @@ entries:
     version: 1.12.3
   - apiVersion: v2
     appVersion: v0.12.2
-    created: "2023-07-31T07:23:25.778820713Z"
+    created: "2023-08-15T16:04:47.237875793Z"
     description: A Helm chart for Cloudprober
     digest: 1e7edf136afc4fc2b6d04d1eca0a2359508654db1e11317a9de9b95ccc1cdaf2
     name: cloudprober
@@ -128,4 +145,4 @@ entries:
     urls:
     - https://helm.cloudprober.org/packages/cloudprober-1.12.2.tgz
     version: 1.12.2
-generated: "2023-07-31T07:23:25.774285174Z"
+generated: "2023-08-15T16:04:47.234549569Z"
