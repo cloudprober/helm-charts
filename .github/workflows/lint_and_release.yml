@@ -73,6 +73,17 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v3
 
+      - name: Create tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ env.CHART_VERSION }}',
+              sha: context.sha
+            })
+
       - name: Package chart and build index
         run: |-
           git worktree add repo gh-pages
