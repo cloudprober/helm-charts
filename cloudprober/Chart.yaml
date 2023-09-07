@@ -8,7 +8,7 @@ sources:
 maintainers:
   - name: Manu Garg
     email: manugarg@gmail.com
-    url: https://linkedin.com/in/manugarg
+    url: https://github.com/manugarg
 
 description: A Helm chart for Cloudprober
 
