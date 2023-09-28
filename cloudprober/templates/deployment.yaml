@@ -39,7 +39,7 @@ spec:
             name: {{ .configMap | default .name }}
             {{- with .items }}
             items:
-              {{- toYaml . | nindent 8 }}
+              {{- toYaml . | nindent 14 }}
             {{- end }}
         {{- end }}
       containers:
