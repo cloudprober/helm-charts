@@ -59,11 +59,9 @@ serviceAccount:
 rbac:
   create: true
 
-podAnnotations:
-  {}
+podAnnotations: {}
 
-podLabels:
-  {}
+podLabels: {}
 
 podSecurityContext:
   {}
@@ -120,3 +118,13 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Extra configmaps to mount in cloudprober pods
+# Values are templated.
+extraConfigmapMounts:
+  []
+  # - name: certs-configmap
+  #   mountPath: /certs/ssl/
+  #   subPath: certificates.crt # (optional)
+  #   configMap: certs-configmap
+  #   readOnly: true
