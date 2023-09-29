@@ -128,3 +128,13 @@ extraConfigmapMounts:
   #   subPath: certificates.crt # (optional)
   #   configMap: certs-configmap
   #   readOnly: true
+
+# Extra containers. We can use these containers to run helper services like
+# cypress-server to run UI tests.
+extraContainers: ''
+# extraContainers: |
+# - name: cypress-server
+#   image: ghcr.io/manugarg/cypress-server:latest
+#   ports:
+#     - name: http
+#       containerPort: 8080
