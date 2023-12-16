@@ -6,4 +6,8 @@ metadata:
 data:
   cloudprober.cfg: |
   {{- .Values.config | nindent 4}}
+  {{ range .Values.additionalConfigs }}
+  {{.name }}: |
+  {{- .value | nindent 4}}
+  {{- end }}
 {{- end }}

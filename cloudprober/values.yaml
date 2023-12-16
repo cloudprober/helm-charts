@@ -29,6 +29,28 @@ config: |
     type: PROMETHEUS
   }
 
+# This option is useful to split the config into multiple files. Cloudprober
+# supports including other files using the "include" directive. Using
+# additionalConfigs you can provide additional files to be included in the
+# configmap. All these files will be mounted in the same directory as the
+# main config file, so you can directly include them.
+#
+# For example, if you add an additional config file "team1.cfg", you can
+# include it in the main config file as:
+# include: "team1.cfg"
+#
+# Example:
+# additionalConfigs:
+#  - name: config1
+#    value: |
+#      probe {
+#        ...
+#      }
+#
+# To set this value on command line:
+# elm .. --set-file extraConfigs[0].name=team1.cfg,extraConfigs[0].value=$home/team1.cfg"
+additionalConfigs: []
+
 # Example:
 # env:
 #  - name: SERVICE_TOKEN
