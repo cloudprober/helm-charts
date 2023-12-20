@@ -24,3 +24,11 @@ You can either add config directly in the `values.yaml`, or you can provide conf
 helm upgrade --install cloudprober cloudprober/cloudprober \
     --set-file config=~/monitoring/config/cloudprober.cfg -n cloudprober
 ```
+
+To specify additional configs, for including in the main config file for example:
+
+```
+helm upgrade install cloudprober cloudprober/cloudprober -n cloudprober --set-file config=cloudprober.cfg \
+  --set additionalConfigs[0].name=team1.cfg --set-file additionalConfigs[0].value=cloudprober.d/team1.cfg \
+  --set additionalConfigs[1].name=team2.cfg --set-file additionalConfigs[1].value=cloudprober.d/team2.cfg
+```
