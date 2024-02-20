@@ -4,7 +4,7 @@ kind: ConfigMap
 metadata:
   name: {{ include "cloudprober.fullname" . }}
 data:
-  cloudprober.cfg: |
+  cloudprober.{{- .Values.config.format }}: |
   {{- .Values.config | nindent 4}}
   {{ range .Values.additionalConfigs }}
   {{.name }}: |

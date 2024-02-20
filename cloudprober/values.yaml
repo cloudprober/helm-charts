@@ -20,6 +20,9 @@ image:
 configMap:
   name: ''
   create: true
+  # The config file suffix; supported suffixes are in
+  # https://github.com/cloudprober/cloudprober/blob/master/config/config.go#L72
+  format: 'cfg'
 
 # You can either embed config here, or keep it in a separate file and provide
 # it at run-time, like this:
