@@ -19,4 +19,4 @@ version: 1.0.8
 
 # Cloudprober release version
 # This is automatically updated when there is a new Cloudprober release.
-appVersion: 'v0.13.5'
+appVersion: 'v0.13.6'
