@@ -145,6 +145,16 @@ tolerations: []
 
 affinity: {}
 
+topologySpreadConstraints:
+  {}
+  # - labelSelector:
+  #     matchLabels:
+  #       app.kubernetes.io/instance: cloudprober
+  #       app.kubernetes.io/name: cloudprober
+  #   maxSkew: 1
+  #   topologyKey: topology.kubernetes.io/zone
+  #   whenUnsatisfiable: ScheduleAnyway
+
 # Extra configmaps to mount in cloudprober pods
 # Values are templated.
 extraConfigmapMounts:
