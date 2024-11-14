@@ -146,7 +146,7 @@ tolerations: []
 affinity: {}
 
 topologySpreadConstraints:
-  {}
+  []
   # - labelSelector:
   #     matchLabels:
   #       app.kubernetes.io/instance: cloudprober
