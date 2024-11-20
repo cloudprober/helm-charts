@@ -52,7 +52,7 @@ config: |
 #      }
 #
 # To set this value on command line:
-# elm .. --set-file extraConfigs[0].name=team1.cfg,extraConfigs[0].value=$home/team1.cfg"
+# helm .. --set-file extraConfigs[0].name=team1.cfg,extraConfigs[0].value=$home/team1.cfg"
 additionalConfigs: []
 
 # Example:
