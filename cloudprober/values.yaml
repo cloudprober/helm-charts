@@ -10,6 +10,10 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: null
 
+# extraArgs to add args to the cloudprober container in order to add cloudprober flags
+#extraArgs:
+# "--cloud_metadata=none"
+
 # configmap to use for the cloudprober config.
 # configMap name defaults to release name, but can be overridden here.
 # If create is true, a configMap is created from the config value, otherwise

@@ -48,7 +48,7 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: ['--config_file', '/cfg/cloudprober.{{- .Values.configFormat -}}', '--logtostderr']
+          args: ['--config_file', '/cfg/cloudprober.{{- .Values.configFormat -}}', '--logtostderr'{{- include "join-args" .Values.extraArgs -}}]
           volumeMounts:
             - name: cloudprober-config
               mountPath: /cfg

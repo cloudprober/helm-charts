@@ -72,3 +72,10 @@ specified.
 {{- include "cloudprober.fullname" . }}
 {{- end }}
 {{- end }}
+
+{{- define "join-args" -}}
+{{- $args := . -}}
+{{- range $index, $element := $args -}}
+, '{{ $element }}'
+{{- end -}}
+{{- end -}}
