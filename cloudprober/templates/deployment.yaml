@@ -49,7 +49,6 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
-            - "--logtostderr"          
             {{ if .Values.cloudprober_args }}
             {{ with .Values.cloudprober_args }}
               - {{- toYaml . | nindent 12 }}
