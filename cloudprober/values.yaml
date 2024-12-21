@@ -16,11 +16,15 @@ image:
 # an existing configMap is used.
 # One caveat with managing config map outside of helm charts is that you'll
 # need to manage the deployment restart yourself after updating the config
-# map.
+# map. If you're managing the configMap outside of helm and config file name
+# is different, you should set the value of configFileName as well.
 configMap:
   name: ''
   create: true
 
+# You can override the default config filename using the following field. It's
+# typically useful if you're managing the configMap outside of helm.
+configFileName: 'cloudprober'
 # The config file suffix; suffixes that provide different parsing are:
 # "json", "yaml", "yml"
 configFormat: 'cfg'
