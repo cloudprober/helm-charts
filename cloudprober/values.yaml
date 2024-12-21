@@ -22,8 +22,8 @@ configMap:
   name: ''
   create: true
 
-# The default config filename is 'cloudprober'. If managing the configMap outside of helm,
-# you may want to use a more specific filename instead, which can be set via configFileName
+# You can override the default config filename using the following field. It's
+# typically useful if you're managing the configMap outside of helm.
 configFileName: 'cloudprober'
 # The config file suffix; suffixes that provide different parsing are:
 # "json", "yaml", "yml"
