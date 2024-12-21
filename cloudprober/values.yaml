@@ -16,7 +16,8 @@ image:
 # an existing configMap is used.
 # One caveat with managing config map outside of helm charts is that you'll
 # need to manage the deployment restart yourself after updating the config
-# map. You may also want to set the value of configFileName
+# map. If you're managing the configMap outside of helm and config file name
+# is different, you should set the value of configFileName as well.
 configMap:
   name: ''
   create: true
