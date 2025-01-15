@@ -11,7 +11,7 @@ image:
   tag: null
 
 # extraArgs to add args to the cloudprober container in order to add cloudprober flags
-#extraArgs:
+# extraArgs:
 #  - "--cloud_metadata=none"
 
 # configmap to use for the cloudprober config.
