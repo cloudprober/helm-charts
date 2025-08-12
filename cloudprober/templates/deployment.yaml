@@ -49,7 +49,6 @@ spec:
             defaultMode: {{ .defaultMode | default 400 }}
             {{- with .items }}
             items:
-
               {{- toYaml . | nindent 14 }}
           {{- end }}
         {{- end }}
