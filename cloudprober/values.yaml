@@ -170,8 +170,18 @@ extraConfigmapMounts:
   # - name: certs-configmap
   #   mountPath: /certs/ssl/
   #   subPath: certificates.crt # (optional)
-  #   configMap: certs-configmap
+  #   configMap: certs-configmap # (optional, defaults to name)
   #   readOnly: true
+  #   items: []
+
+extraSecretMounts:
+  []
+#   - name: additional-probe-secrets
+#     mountPath: /var/run/probe/secret
+#     subPath: probe.key # (optional)
+#     secretName: probe-secret # (optional, defaults to name)
+#     defaultMode: 400 # (optional, defaults to 400)
+#     items: []
 
 # Extra containers. We can use these containers to run helper services like
 # cypress-server to run UI tests.
