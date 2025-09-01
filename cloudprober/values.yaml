@@ -110,6 +110,13 @@ securityContext:
   # runAsNonRoot: true
   # runAsUser: 1000
 
+# Whether to share process namespace within the pod. It's recommended to keep
+# this enabled if you're using browser probes, or external probes that might
+# fork out more processes. It shouldn't hurt regardless.
+# Visit the following link for more details:
+# https://github.com/cloudprober/cloudprober/issues/1128#issuecomment-3207721143
+shareProcessNamespace: true
+
 service:
   type: ClusterIP
   port: 8080
