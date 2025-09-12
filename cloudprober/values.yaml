@@ -191,6 +191,11 @@ extraSecretMounts:
 #     defaultMode: 400 # (optional, defaults to 400)
 #     items: []
 
+# Override the checksum annotation to force pod restarts.
+# When empty (default), uses the ConfigMap content hash for automatic restarts on config changes.
+# Set to any unique value (e.g., current timestamp) to force a restart.
+checksumOverride: ''
+
 # Extra containers. We can use these containers to run helper services like
 # cypress-server to run UI tests.
 extraContainers: ''
