@@ -15,7 +15,7 @@ description: A Helm chart for Cloudprober
 type: application
 
 # Note that final chart is computed by adding up this version and appVersion.
-version: 1.0.14
+version: 1.0.15
 
 # Cloudprober release version
 # This is automatically updated when there is a new Cloudprober release.
