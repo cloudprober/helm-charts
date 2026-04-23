@@ -10,6 +10,29 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: null
 
+# externalProberImage: when set, enables running an external probe (see
+# https://cloudprober.org/docs/how-to/external-probe/) that requires extra
+# dependencies (e.g. redis-cli, mysql-client) without building a custom image
+# that bundles both cloudprober and the dependencies.
+#
+# How it works:
+#  - The cloudprober container runs as an initContainer that copies the
+#    cloudprober binary to a shared emptyDir volume.
+#  - The externalProberImage is run as the main container and executes the
+#    cloudprober binary from the shared volume.
+#
+# The external prober image only needs the extra binaries your external probe
+# invokes; it does not need to include cloudprober itself.
+#
+# Example:
+# externalProberImage:
+#   repository: myregistry/redis-prober
+#   tag: "1.0.0"
+externalProberImage:
+  repository: ''
+  tag: ''
+  pullPolicy: IfNotPresent
+
 # extraArgs to add args to the cloudprober container in order to add cloudprober flags
 # extraArgs:
 #  - "--cloud_metadata=none"
