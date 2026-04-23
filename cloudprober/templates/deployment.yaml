@@ -1,3 +1,5 @@
+{{- $useExternalProberImage := .Values.externalProberImage.repository -}}
+{{- $cloudproberImage := printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -34,6 +36,10 @@ spec:
         - name: cloudprober-config
           configMap:
             name: {{ include "cloudprober.config-map.name" . }}
+        {{- if $useExternalProberImage }}
+        - name: cloudprober-bin
+          emptyDir: {}
+        {{- end }}
         {{- range .Values.extraConfigmapMounts }}
         - name: {{ .name }}
           configMap:
@@ -54,12 +60,28 @@ spec:
               {{- toYaml . | nindent 14 }}
           {{- end }}
         {{- end }}
+      {{- if $useExternalProberImage }}
+      initContainers:
+        - name: cloudprober-init
+          image: {{ $cloudproberImage | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["cp", "/cloudprober", "/cloudprober-bin/cloudprober"]
+          volumeMounts:
+            - name: cloudprober-bin
+              mountPath: /cloudprober-bin
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- if $useExternalProberImage }}
+          image: "{{ .Values.externalProberImage.repository }}:{{ .Values.externalProberImage.tag }}"
+          imagePullPolicy: {{ .Values.externalProberImage.pullPolicy }}
+          command: ["/cloudprober-bin/cloudprober"]
+          {{- else }}
+          image: {{ $cloudproberImage | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- end }}
           args:
             - "--config_file"
             - "/cfg/{{- .Values.configFileName -}}.{{- .Values.configFormat -}}"
@@ -71,6 +93,11 @@ spec:
           volumeMounts:
             - name: cloudprober-config
               mountPath: /cfg
+            {{- if $useExternalProberImage }}
+            - name: cloudprober-bin
+              mountPath: /cloudprober-bin
+              readOnly: true
+            {{- end }}
             {{- range .Values.extraConfigmapMounts }}
             - name: {{ .name }}
               mountPath: {{ .mountPath }}
