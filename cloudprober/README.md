@@ -10,10 +10,12 @@ https://github.com/cloudprober/helm-charts/tree/main/cloudprober
 
 ## To install:
 
+The chart is published as an OCI artifact to GitHub Container Registry.
+Helm 3.8+ is required.
+
 ```
-helm repo add cloudprober https://helm.cloudprober.org/
-helm repo update
-helm install cloudprober cloudprober/cloudprober -n cloudprober --create-namespace
+helm install cloudprober oci://ghcr.io/cloudprober/charts/cloudprober \
+    -n cloudprober --create-namespace
 ```
 
 ## To add/update the Cloudprober config
@@ -21,14 +23,27 @@ helm install cloudprober cloudprober/cloudprober -n cloudprober --create-namespa
 You can either add config directly in the `values.yaml`, or you can provide config on the command line through the `--set-file` flag.
 
 ```
-helm upgrade --install cloudprober cloudprober/cloudprober \
+helm upgrade --install cloudprober oci://ghcr.io/cloudprober/charts/cloudprober \
     --set-file config=~/monitoring/config/cloudprober.cfg -n cloudprober
 ```
 
 To specify additional configs, for including in the main config file for example:
 
 ```
-helm upgrade install cloudprober cloudprober/cloudprober -n cloudprober --set-file config=cloudprober.cfg \
+helm upgrade --install cloudprober oci://ghcr.io/cloudprober/charts/cloudprober \
+  -n cloudprober --set-file config=cloudprober.cfg \
   --set additionalConfigs[0].name=team1.cfg --set-file additionalConfigs[0].value=cloudprober.d/team1.cfg \
   --set additionalConfigs[1].name=team2.cfg --set-file additionalConfigs[1].value=cloudprober.d/team2.cfg
+```
+
+## Legacy: classic Helm repository (deprecated)
+
+The chart is also still published to the classic Helm repo at
+`https://helm.cloudprober.org/` for backwards compatibility. New users should
+prefer the OCI form above; this path may be retired in a future release.
+
+```
+helm repo add cloudprober https://helm.cloudprober.org/
+helm repo update
+helm install cloudprober cloudprober/cloudprober -n cloudprober --create-namespace
 ```
