@@ -1,0 +1,21 @@
+{{- if .Values.builtinServers.http.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "cloudprober.fullname" . }}-builtin-http
+  labels:
+    {{- include "cloudprober.labels" . | nindent 4 }}
+  {{- with .Values.builtinServers.http.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.builtinServers.http.service.type }}
+  ports:
+    - port: {{ .Values.builtinServers.http.service.port }}
+      targetPort: builtin-http
+      protocol: TCP
+      name: builtin-http
+  selector:
+    {{- include "cloudprober.selectorLabels" . | nindent 4 }}
+{{- end }}

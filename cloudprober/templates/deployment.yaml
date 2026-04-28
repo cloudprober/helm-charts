@@ -120,6 +120,16 @@ spec:
             - name: http
               containerPort: 9313
               protocol: TCP
+            {{- if .Values.builtinServers.http.enabled }}
+            - name: builtin-http
+              containerPort: {{ .Values.builtinServers.http.port }}
+              protocol: TCP
+            {{- end }}
+            {{- if .Values.builtinServers.udp.enabled }}
+            - name: builtin-udp
+              containerPort: {{ .Values.builtinServers.udp.port }}
+              protocol: UDP
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /health

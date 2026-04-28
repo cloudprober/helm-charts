@@ -5,7 +5,28 @@ metadata:
   name: {{ include "cloudprober.fullname" . }}
 data:
   {{ .Values.configFileName }}.{{- .Values.configFormat }}: |
-  {{- .Values.config | nindent 4}}
+  {{- .Values.config | nindent 4 }}
+  {{- if eq .Values.configFormat "cfg" }}
+  {{- if .Values.builtinServers.http.enabled }}
+
+    server {
+      type: HTTP
+      http_server {
+        port: {{ .Values.builtinServers.http.port }}
+      }
+    }
+  {{- end }}
+  {{- if .Values.builtinServers.udp.enabled }}
+
+    server {
+      type: UDP
+      udp_server {
+        port: {{ .Values.builtinServers.udp.port }}
+        type: {{ .Values.builtinServers.udp.mode }}
+      }
+    }
+  {{- end }}
+  {{- end }}
   {{ range .Values.additionalConfigs }}
   {{.name }}: |
   {{- .value | nindent 4}}

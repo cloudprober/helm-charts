@@ -143,6 +143,35 @@ shareProcessNamespace: true
 service:
   type: ClusterIP
   port: 8080
+  annotations: {}
+
+# Built-in cloudprober servers (https://cloudprober.org/docs/how-to/built-in-servers/).
+# When enabled, the chart appends a corresponding `server { ... }` block to
+# the rendered cloudprober config, opens the container port on the pod, and
+# creates a dedicated Kubernetes Service that exposes it.
+#
+# Note: automatic config injection only works with the default `cfg`
+# (protobuf text) configFormat. If you are using `yaml`/`json`, declare the
+# server blocks manually in `config` and just use this section to expose
+# the ports.
+builtinServers:
+  http:
+    enabled: false
+    port: 3141
+    service:
+      type: ClusterIP
+      port: 3141
+      annotations: {}
+  udp:
+    enabled: false
+    port: 31415
+    # UDP server mode: ECHO bounces packets back to the sender, DISCARD drops
+    # them silently.
+    mode: ECHO
+    service:
+      type: ClusterIP
+      port: 31415
+      annotations: {}
 
 serviceMonitor:
   enabled: true

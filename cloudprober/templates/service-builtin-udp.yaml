@@ -1,0 +1,21 @@
+{{- if .Values.builtinServers.udp.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "cloudprober.fullname" . }}-builtin-udp
+  labels:
+    {{- include "cloudprober.labels" . | nindent 4 }}
+  {{- with .Values.builtinServers.udp.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.builtinServers.udp.service.type }}
+  ports:
+    - port: {{ .Values.builtinServers.udp.service.port }}
+      targetPort: builtin-udp
+      protocol: UDP
+      name: builtin-udp
+  selector:
+    {{- include "cloudprober.selectorLabels" . | nindent 4 }}
+{{- end }}
