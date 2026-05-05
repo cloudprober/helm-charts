@@ -146,6 +146,7 @@ service:
 
 serviceMonitor:
   enabled: true
+  interval: 1m
 
 ingress:
   enabled: false
