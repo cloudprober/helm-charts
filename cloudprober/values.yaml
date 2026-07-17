@@ -142,7 +142,10 @@ shareProcessNamespace: true
 
 service:
   type: ClusterIP
-  port: 8080
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
 
 serviceMonitor:
   enabled: true
