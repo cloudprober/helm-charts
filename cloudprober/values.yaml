@@ -4,6 +4,12 @@
 
 replicaCount: 1
 
+deploymentStrategy: {}
+  # type: RollingUpdate
+  # rollingUpdate:
+  #   maxUnavailable: 1
+  #   maxSurge: 1
+
 image:
   repository: ghcr.io/cloudprober/cloudprober
   pullPolicy: IfNotPresent
@@ -140,8 +146,25 @@ securityContext:
 # https://github.com/cloudprober/cloudprober/issues/1128#issuecomment-3207721143
 shareProcessNamespace: true
 
+# Optional duration in seconds the pod needs to terminate gracefully. When
+# unset, Kubernetes uses its default (30 seconds).
+# terminationGracePeriodSeconds: 60
+terminationGracePeriodSeconds: null
+
+# Optional graceful drain. When set, a preStop hook keeps the container alive
+# (still answering probes) for this many seconds before SIGTERM is sent, giving
+# load balancers / service discovery time to stop routing to the pod so no
+# probes are lost. When unset, no preStop hook is added.
+#
+# Uses the native `sleep` preStop handler (Kubernetes >= 1.30). If set, ensure
+# terminationGracePeriodSeconds is strictly greater than terminationDrainSeconds
+# (plus any cloudprober stop_time_sec), or the kubelet SIGKILLs mid-shutdown.
+# terminationDrainSeconds: 20
+terminationDrainSeconds: null
+
 service:
   type: ClusterIP
+  annotations: {}
   port: 8080
   # Optional: expose multiple ports (e.g. a probe listener).
   # Overrides `port` when set.
