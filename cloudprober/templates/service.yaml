@@ -7,11 +7,18 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
+    {{- if .Values.service.ports }}
     {{- range .Values.service.ports }}
     - port: {{ .port }}
-      targetPort: {{ .port }}
-      protocol: {{ .protocol }}
+      targetPort: {{ .targetPort | default "http" }}
+      protocol: {{ .protocol | default "TCP" }}
       name: {{ .name }}
+    {{- end }}
+    {{- else }}
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
     {{- end }}
   selector:
     {{- include "cloudprober.selectorLabels" . | nindent 4 }}

@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "cloudprober.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "cloudprober.fullname" . }}:{{ include "cloudprober.servicePort" . }}']
   restartPolicy: Never

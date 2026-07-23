@@ -72,3 +72,15 @@ specified.
 {{- include "cloudprober.fullname" . }}
 {{- end }}
 {{- end }}
+
+{{/*
+Retrieve the service port from the values. If multiple ports are specified, 
+the first one is used. Otherwise, the single port is used.
+*/}}
+{{- define "cloudprober.servicePort" -}}
+{{- if .Values.service.ports -}}
+{{- (first .Values.service.ports).port -}}
+{{- else -}}
+{{- .Values.service.port -}}
+{{- end -}}
+{{- end -}}
