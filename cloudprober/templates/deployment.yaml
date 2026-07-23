@@ -8,6 +8,10 @@ metadata:
     {{- include "cloudprober.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  {{- with .Values.deploymentStrategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "cloudprober.selectorLabels" . | nindent 6 }}
@@ -30,6 +34,9 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "cloudprober.serviceAccountName" . }}
       shareProcessNamespace: {{ .Values.shareProcessNamespace }}
+      {{- with .Values.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ . }}
+      {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       volumes:
@@ -120,6 +127,12 @@ spec:
             - name: http
               containerPort: 9313
               protocol: TCP
+          {{- with .Values.terminationDrainSeconds }}
+          lifecycle:
+            preStop:
+              sleep:
+                seconds: {{ . }}
+          {{- end }}
           livenessProbe:
             httpGet:
               path: /health
