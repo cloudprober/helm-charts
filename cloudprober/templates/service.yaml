@@ -14,9 +14,9 @@ spec:
     {{- if .Values.service.ports }}
     {{- range .Values.service.ports }}
     - port: {{ .port }}
-      targetPort: {{ .targetPort | default "http" }}
+      targetPort: {{ .targetPort | default .port }}
       protocol: {{ .protocol | default "TCP" }}
-      name: {{ .name }}
+      name: {{ .name | default (printf "port-%v" .port) }}
     {{- end }}
     {{- else }}
     - port: {{ .Values.service.port }}

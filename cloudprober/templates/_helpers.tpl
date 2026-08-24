@@ -74,13 +74,44 @@ specified.
 {{- end }}
 
 {{/*
-Retrieve the service port from the values. If multiple ports are specified, 
-the first one is used. Otherwise, the single port is used.
+Retrieve the service port from the values. The first port named "http" in
+.Values.service.ports is used if present, otherwise .Values.service.port, and
+finally the first entry of .Values.service.ports.
 */}}
 {{- define "cloudprober.servicePort" -}}
-{{- if .Values.service.ports -}}
-{{- (first .Values.service.ports).port -}}
-{{- else -}}
+{{- $servicePort := "" -}}
+{{- range .Values.service.ports -}}
+{{- if and (eq (.name | default "") "http") (not $servicePort) -}}
+{{- $servicePort = .port -}}
+{{- end -}}
+{{- end -}}
+{{- if $servicePort -}}
+{{- $servicePort -}}
+{{- else if .Values.service.port -}}
 {{- .Values.service.port -}}
+{{- else if .Values.service.ports -}}
+{{- (first .Values.service.ports).port -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Retrieve the service port name from the values. The first port named "http" in
+.Values.service.ports is used if present, otherwise the name given to
+.Values.service.port, and finally the first entry of .Values.service.ports.
+*/}}
+{{- define "cloudprober.servicePortName" -}}
+{{- $servicePortName := "" -}}
+{{- range .Values.service.ports -}}
+{{- if and (eq (.name | default "") "http") (not $servicePortName) -}}
+{{- $servicePortName = .name -}}
+{{- end -}}
+{{- end -}}
+{{- if $servicePortName -}}
+{{- $servicePortName -}}
+{{- else if .Values.service.port -}}
+{{- "http" -}}
+{{- else if .Values.service.ports -}}
+{{- $firstPort := first .Values.service.ports -}}
+{{- $firstPort.name | default (printf "port-%v" $firstPort.port) -}}
+{{- end -}}
+{{- end }}
