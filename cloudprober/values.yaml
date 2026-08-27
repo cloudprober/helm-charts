@@ -166,6 +166,13 @@ service:
   type: ClusterIP
   annotations: {}
   port: 8080
+  # Optional: expose multiple ports (e.g. a probe listener).
+  # Overrides `port` when set.
+  ports: []
+  #   - name: http
+  #     port: 8080
+  #     targetPort: http
+  #     protocol: TCP
 
 serviceMonitor:
   enabled: true
