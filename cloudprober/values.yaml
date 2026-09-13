@@ -4,6 +4,9 @@
 
 replicaCount: 1
 
+# Annotations to add to the Deployment. Useful e.g. with
+# stakater/Reloader (reloader.stakater.com/auto) to restart the
+# deployment when an externally managed ConfigMap changes.
 deploymentAnnotations: {}
 
 deploymentStrategy: {}
