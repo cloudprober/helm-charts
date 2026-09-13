@@ -72,3 +72,45 @@ specified.
 {{- include "cloudprober.fullname" . }}
 {{- end }}
 {{- end }}
+
+{{/*
+Select which entry of .Values.service.ports serves the cloudprober status page
+and metrics: the entry named "http" if there is one, otherwise the first entry.
+Returns its index. Callers must only use this when .Values.service.ports is
+set.
+*/}}
+{{- define "cloudprober.servicePortIndex" -}}
+{{- $selected := 0 -}}
+{{- range $i, $p := .Values.service.ports -}}
+{{- if eq ($p.name | default "") "http" -}}
+{{- $selected = $i -}}
+{{- end -}}
+{{- end -}}
+{{- $selected -}}
+{{- end -}}
+
+{{/*
+Retrieve the service port. .Values.service.ports takes precedence whenever it
+is set; .Values.service.port is used otherwise.
+*/}}
+{{- define "cloudprober.servicePort" -}}
+{{- if .Values.service.ports -}}
+{{- $entry := index .Values.service.ports (include "cloudprober.servicePortIndex" . | atoi) -}}
+{{- $entry.port -}}
+{{- else -}}
+{{- .Values.service.port -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Retrieve the service port name, .Values.service.ports takes precedence whenever 
+it is set; the name given to .Values.service.port is used otherwise.
+*/}}
+{{- define "cloudprober.servicePortName" -}}
+{{- if .Values.service.ports -}}
+{{- $entry := index .Values.service.ports (include "cloudprober.servicePortIndex" . | atoi) -}}
+{{- $entry.name | default (printf "port-%v" $entry.port) -}}
+{{- else -}}
+{{- "http" -}}
+{{- end -}}
+{{- end }}

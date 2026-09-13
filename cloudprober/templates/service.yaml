@@ -11,9 +11,18 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    {{- if .Values.service.ports }}
+    {{- range .Values.service.ports }}
+    - port: {{ .port }}
+      targetPort: {{ .targetPort | default .port }}
+      protocol: {{ .protocol | default "TCP" }}
+      name: {{ .name | default (printf "port-%v" .port) }}
+    {{- end }}
+    {{- else }}
+    - port: {{ required "service.port is required when service.ports is empty" .Values.service.port }}
       targetPort: http
       protocol: TCP
       name: http
+    {{- end }}
   selector:
     {{- include "cloudprober.selectorLabels" . | nindent 4 }}
