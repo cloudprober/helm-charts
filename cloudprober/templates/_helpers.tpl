@@ -75,18 +75,33 @@ specified.
 
 {{/*
 Select which entry of .Values.service.ports serves the cloudprober status page
-and metrics: the entry named "http" if there is one, otherwise the first entry.
-Returns its index. Callers must only use this when .Values.service.ports is
-set.
+and metrics: the entry named "http" if there is one, otherwise the entry targeting
+the http container port, and fail otherwise.
+Returns its index. Callers must only use this when .Values.service.ports is set.
 */}}
 {{- define "cloudprober.servicePortIndex" -}}
-{{- $selected := 0 -}}
+{{- $byName := -1 -}}
+{{- $byTarget := -1 -}}
 {{- range $i, $p := .Values.service.ports -}}
-{{- if eq ($p.name | default "") "http" -}}
-{{- $selected = $i -}}
+{{- if and (lt $byName 0) (eq ($p.name | default "") "http") -}}
+{{- $byName = $i -}}
+{{- end -}}
+{{- if and (lt $byTarget 0) (has (toString ($p.targetPort | default "http")) (list "http" "9313")) -}}
+{{- $byTarget = $i -}}
 {{- end -}}
 {{- end -}}
-{{- $selected -}}
+{{- if ge $byName 0 -}}{{ $byName }}
+{{- else if ge $byTarget 0 -}}{{ $byTarget }}
+{{- else -}}{{ fail "service.ports must include an entry named \"http\" or targeting the http container port (9313)" }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Name of a single .Values.service.ports entry: its explicit name, or one
+derived from the port and protocol. Takes the port entry as context.
+*/}}
+{{- define "cloudprober.servicePortEntryName" -}}
+{{- .name | default (printf "port-%v-%s" .port (.protocol | default "TCP" | lower)) -}}
 {{- end -}}
 
 {{/*
@@ -103,13 +118,13 @@ is set; .Values.service.port is used otherwise.
 {{- end -}}
 
 {{/*
-Retrieve the service port name, .Values.service.ports takes precedence whenever 
+Retrieve the service port name, .Values.service.ports takes precedence whenever
 it is set; the name given to .Values.service.port is used otherwise.
 */}}
 {{- define "cloudprober.servicePortName" -}}
 {{- if .Values.service.ports -}}
 {{- $entry := index .Values.service.ports (include "cloudprober.servicePortIndex" . | atoi) -}}
-{{- $entry.name | default (printf "port-%v" $entry.port) -}}
+{{- include "cloudprober.servicePortEntryName" $entry -}}
 {{- else -}}
 {{- "http" -}}
 {{- end -}}

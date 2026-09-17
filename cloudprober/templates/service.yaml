@@ -16,7 +16,7 @@ spec:
     - port: {{ .port }}
       targetPort: {{ .targetPort | default "http" }}
       protocol: {{ .protocol | default "TCP" }}
-      name: {{ .name | default (printf "port-%v-%s" .port (.protocol | default "TCP" | lower)) }}
+      name: {{ include "cloudprober.servicePortEntryName" . }}
     {{- end }}
     {{- else }}
     - port: {{ required "service.port is required when service.ports is empty" .Values.service.port }}
