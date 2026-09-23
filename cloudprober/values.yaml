@@ -2,18 +2,35 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Workload kind: Deployment or DaemonSet.
+# Control placement with nodeSelector, affinity and tolerations.
+kind: Deployment
+
+# Used only with kind: Deployment.
 replicaCount: 1
 
-# Annotations to add to the Deployment. Useful e.g. with
+# Annotations to add to the workload (Deployment or DaemonSet). Useful e.g. with
 # stakater/Reloader (reloader.stakater.com/auto) to restart the
 # deployment when an externally managed ConfigMap changes.
 deploymentAnnotations: {}
 
+# Used only with kind: Deployment.
 deploymentStrategy: {}
   # type: RollingUpdate
   # rollingUpdate:
   #   maxUnavailable: 1
   #   maxSurge: 1
+
+# Used only with kind: DaemonSet. Empty uses Kubernetes defaults.
+daemonSetUpdateStrategy: {}
+  # type: RollingUpdate
+  # rollingUpdate:
+  #   maxUnavailable: "10%"
+
+hostNetwork: false
+# Empty uses the Kubernetes default (ClusterFirst). Set ClusterFirstWithHostNet
+# with hostNetwork: true to keep cluster DNS resolution.
+dnsPolicy: ''
 
 image:
   repository: ghcr.io/cloudprober/cloudprober
