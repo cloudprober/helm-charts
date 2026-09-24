@@ -188,6 +188,12 @@ service:
   type: ClusterIP
   annotations: {}
   port: 8080
+  # Additional ports to expose on the service (e.g. a probe listener).
+  # Entries are Kubernetes ServicePort specs.
+  extraPorts: []
+  #   - name: probe
+  #     port: 9314
+  #     targetPort: 9314
 
 serviceMonitor:
   enabled: true
