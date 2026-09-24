@@ -15,5 +15,8 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    {{- with .Values.service.extraPorts }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   selector:
     {{- include "cloudprober.selectorLabels" . | nindent 4 }}
