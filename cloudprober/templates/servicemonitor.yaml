@@ -12,6 +12,5 @@ spec:
     - {{ .Release.Namespace }}
   endpoints:
   - interval: {{ .Values.serviceMonitor.interval }}
-    port: {{ include "cloudprober.servicePortName" . }}
     path: /metrics
 {{- end }}
