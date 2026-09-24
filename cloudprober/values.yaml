@@ -4,9 +4,9 @@
 
 # Workload kind: Deployment or DaemonSet.
 # Control placement with nodeSelector, affinity and tolerations.
-kind: Deployment
+workloadKind: Deployment
 
-# Used only with kind: Deployment.
+# Used only with workloadKind: Deployment.
 replicaCount: 1
 
 # Annotations to add to the workload (Deployment or DaemonSet). Useful e.g. with
@@ -14,23 +14,23 @@ replicaCount: 1
 # deployment when an externally managed ConfigMap changes.
 deploymentAnnotations: {}
 
-# Used only with kind: Deployment.
+# Used only with workloadKind: Deployment.
 deploymentStrategy: {}
   # type: RollingUpdate
   # rollingUpdate:
   #   maxUnavailable: 1
   #   maxSurge: 1
 
-# Used only with kind: DaemonSet. Empty uses Kubernetes defaults.
+# Used only with workloadKind: DaemonSet. Empty uses Kubernetes defaults.
 daemonSetUpdateStrategy: {}
   # type: RollingUpdate
   # rollingUpdate:
   #   maxUnavailable: "10%"
 
 hostNetwork: false
-# Empty uses the Kubernetes default (ClusterFirst). Set ClusterFirstWithHostNet
-# with hostNetwork: true to keep cluster DNS resolution.
-dnsPolicy: ''
+# Empty uses ClusterFirstWithHostNet when hostNetwork is true,
+# otherwise the Kubernetes default (ClusterFirst).
+dnsPolicy: ""
 
 image:
   repository: ghcr.io/cloudprober/cloudprober
@@ -229,6 +229,7 @@ tolerations: []
 
 affinity: {}
 
+# Has no effect with workloadKind: DaemonSet.
 topologySpreadConstraints:
   []
   # - labelSelector:

@@ -1,10 +1,10 @@
 {{- $useExternalProberImage := .Values.externalProberImage.repository -}}
 {{- $cloudproberImage := printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) -}}
-{{- if not (has .Values.kind (list "Deployment" "DaemonSet")) -}}
-{{- fail "kind must be Deployment or DaemonSet" -}}
+{{- if not (has .Values.workloadKind (list "Deployment" "DaemonSet")) -}}
+{{- fail (printf "workloadKind must be Deployment or DaemonSet, got %q" .Values.workloadKind) -}}
 {{- end -}}
 apiVersion: apps/v1
-kind: {{ .Values.kind }}
+kind: {{ .Values.workloadKind }}
 metadata:
   name: {{ include "cloudprober.fullname" . }}
   labels:
@@ -14,7 +14,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if eq .Values.kind "Deployment" }}
+  {{- if eq .Values.workloadKind "Deployment" }}
   replicas: {{ .Values.replicaCount }}
   {{- with .Values.deploymentStrategy }}
   strategy:
@@ -44,9 +44,9 @@ spec:
     spec:
       {{- if .Values.hostNetwork }}
       hostNetwork: true
-      {{- end }}
-      {{- with .Values.dnsPolicy }}
-      dnsPolicy: {{ . | quote }}
+      dnsPolicy: {{ .Values.dnsPolicy | default "ClusterFirstWithHostNet" }}
+      {{- else if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy }}
       {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:

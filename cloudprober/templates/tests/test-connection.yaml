@@ -4,7 +4,7 @@ metadata:
   name: "{{ include "cloudprober.fullname" . }}-test-connection"
   labels:
     {{- /* Keep test pods outside the workload selector so they are not adopted and deleted by the DaemonSet. */}}
-    {{- omit (include "cloudprober.labels" . | fromYaml) "app.kubernetes.io/instance" | toYaml | nindent 4 }}
+    {{- omit (include "cloudprober.labels" . | fromYaml) "app.kubernetes.io/name" | toYaml | nindent 4 }}
   annotations:
     "helm.sh/hook": test
 spec:
