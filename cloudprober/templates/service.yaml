@@ -14,7 +14,7 @@ spec:
     {{- if .Values.service.ports }}
     {{- range .Values.service.ports }}
     - port: {{ .port }}
-      targetPort: {{ .targetPort | default "http" }}
+      targetPort: {{ .targetPort | default .port }}
       protocol: {{ .protocol | default "TCP" }}
       name: {{ include "cloudprober.servicePortEntryName" . }}
     {{- end }}

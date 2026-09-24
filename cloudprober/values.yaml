@@ -172,12 +172,15 @@ service:
   annotations: {}
   port: 8080
   # Optional: expose multiple ports (e.g. a probe listener).
-  # Take precedence over `port` when set.
+  # Take precedence over `port` when set. targetPort defaults to port, and
+  # protocol defaults to TCP. One entry must serve the status page: either
+  # named "http" or targeting the http container port (9313).
   ports: []
   #   - name: http
   #     port: 8080
   #     targetPort: http
-  #     protocol: TCP
+  #   - name: probe
+  #     port: 9314
 
 serviceMonitor:
   enabled: true

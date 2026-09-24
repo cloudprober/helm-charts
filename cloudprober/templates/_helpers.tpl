@@ -86,7 +86,7 @@ Returns its index. Callers must only use this when .Values.service.ports is set.
 {{- if and (lt $byName 0) (eq ($p.name | default "") "http") -}}
 {{- $byName = $i -}}
 {{- end -}}
-{{- if and (lt $byTarget 0) (has (toString ($p.targetPort | default "http")) (list "http" "9313")) -}}
+{{- if and (lt $byTarget 0) (has (toString ($p.targetPort | default $p.port)) (list "http" "9313")) -}}
 {{- $byTarget = $i -}}
 {{- end -}}
 {{- end -}}
