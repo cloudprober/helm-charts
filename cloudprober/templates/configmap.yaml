@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "cloudprober.fullname" . }}
+  name: {{ include "cloudprober.config-map.name" . }}
 data:
   {{ .Values.configFileName }}.{{- .Values.configFormat }}: |
   {{- .Values.config | nindent 4}}
