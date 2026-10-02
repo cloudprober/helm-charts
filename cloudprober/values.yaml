@@ -281,3 +281,15 @@ extraContainers: ''
 #   ports:
 #     - name: http
 #       containerPort: 8080
+
+# Extra Kubernetes objects to deploy with the release, for example the
+# Secret or ExternalSecret holding a probe's credentials. Values are
+# templated.
+extraObjects: []
+# extraObjects:
+#   - apiVersion: v1
+#     kind: ConfigMap
+#     metadata:
+#       name: '{{ include "cloudprober.fullname" . }}-extra'
+#     data:
+#       key: value
