@@ -48,6 +48,8 @@ image:
 #    cloudprober binary to a shared emptyDir volume.
 #  - The externalProberImage is run as the main container and executes the
 #    cloudprober binary from the shared volume.
+#  - The initContainer uses the same resources and securityContext as the
+#    main container.
 #
 # The external prober image only needs the extra binaries your external probe
 # invokes; it does not need to include cloudprober itself.
