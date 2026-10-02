@@ -1,0 +1,7 @@
+extraObjects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: '{{ include "cloudprober.fullname" . }}-extra'
+    data:
+      release: '{{ .Release.Name }}'
