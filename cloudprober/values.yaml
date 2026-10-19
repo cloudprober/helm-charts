@@ -267,6 +267,18 @@ extraSecretMounts:
 #     defaultMode: 400 # (optional, defaults to 400)
 #     items: []
 
+# Extra volumes added to the pod, e.g. an emptyDir shared between cloudprober
+# and a sidecar declared in extraContainers.
+extraVolumes: []
+# - name: shared-data
+#   emptyDir: {}
+
+# Extra volumeMounts added to the cloudprober container.
+extraVolumeMounts: []
+# - name: shared-data
+#   mountPath: /shared-data
+#   readOnly: true
+
 # Override the checksum annotation to force pod restarts.
 # When empty (default), uses the ConfigMap content hash for automatic restarts on config changes.
 # Set to any unique value (e.g., current timestamp) to force a restart.

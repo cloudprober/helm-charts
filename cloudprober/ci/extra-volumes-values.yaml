@@ -1,0 +1,13 @@
+extraVolumes:
+  - name: shared-data
+    emptyDir: {}
+extraVolumeMounts:
+  - name: shared-data
+    mountPath: /shared-data
+extraContainers: |
+  - name: sidecar
+    image: busybox:1.37.0
+    command: ["sleep", "infinity"]
+    volumeMounts:
+      - name: shared-data
+        mountPath: /shared-data

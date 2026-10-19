@@ -87,6 +87,9 @@ spec:
               {{- toYaml . | nindent 14 }}
           {{- end }}
         {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- if $useExternalProberImage }}
       initContainers:
         - name: cloudprober-init
@@ -142,6 +145,9 @@ spec:
               subPath: {{ .subPath }}
               {{- end }}
             # Assume that secrets are readOnly and we should not change that.
+            {{- end }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
           ports:
             - name: http
