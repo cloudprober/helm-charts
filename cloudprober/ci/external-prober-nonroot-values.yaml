@@ -1,0 +1,14 @@
+# The external image supplies its own numeric non-root USER. The init container
+# must not inherit runAsNonRoot: it uses the cloudprober image, which runs as root.
+externalProberImage:
+  repository: gcr.io/distroless/static-debian12
+  tag: nonroot
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 64Mi
+securityContext:
+  runAsNonRoot: true

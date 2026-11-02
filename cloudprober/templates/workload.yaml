@@ -93,8 +93,10 @@ spec:
       {{- if $useExternalProberImage }}
       initContainers:
         - name: cloudprober-init
+          {{- with .Values.initContainer.securityContext }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: {{ $cloudproberImage | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["cp", "/cloudprober", "/cloudprober-bin/cloudprober"]
@@ -102,7 +104,7 @@ spec:
             - name: cloudprober-bin
               mountPath: /cloudprober-bin
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml (.Values.initContainer.resources | default .Values.resources) | nindent 12 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
