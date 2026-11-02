@@ -5,3 +5,11 @@ extraObjects:
       name: '{{ include "cloudprober.fullname" . }}-extra'
     data:
       release: '{{ .Release.Name }}'
+      escaped: 'host: {{`{{ env "TARGET_HOST" }}`}}'
+  - |
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: {{ include "cloudprober.fullname" . }}-extra-string
+    data:
+      release: {{ .Release.Name | quote }}
