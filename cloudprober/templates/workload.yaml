@@ -93,12 +93,20 @@ spec:
       {{- if $useExternalProberImage }}
       initContainers:
         - name: cloudprober-init
+          {{- /* Guard against a missing initContainer, e.g. helm upgrade --reuse-values from an older release. */}}
+          {{- $initContainer := .Values.initContainer | default dict }}
+          {{- with $initContainer.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: {{ $cloudproberImage | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["cp", "/cloudprober", "/cloudprober-bin/cloudprober"]
           volumeMounts:
             - name: cloudprober-bin
               mountPath: /cloudprober-bin
+          resources:
+            {{- toYaml ($initContainer.resources | default .Values.resources) | nindent 12 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}

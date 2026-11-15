@@ -48,6 +48,7 @@ image:
 #    cloudprober binary to a shared emptyDir volume.
 #  - The externalProberImage is run as the main container and executes the
 #    cloudprober binary from the shared volume.
+#  - The init container uses initContainer resources and securityContext below.
 #
 # The external prober image only needs the extra binaries your external probe
 # invokes; it does not need to include cloudprober itself.
@@ -60,6 +61,33 @@ externalProberImage:
   repository: ''
   tag: ''
   pullPolicy: IfNotPresent
+
+# Settings for the init container used with externalProberImage.
+initContainer:
+  # Defaults to .Values.resources when empty.
+  resources: {}
+  # Not inherited from securityContext, so policies that check every container
+  # (such as Pod Security "restricted") need the hardening set here too.
+  # The cloudprober image runs as root: if runAsNonRoot is set here or in
+  # podSecurityContext, also set a non-zero runAsUser here or in
+  # podSecurityContext.
+  #
+  # Example for a Pod Security "restricted" namespace:
+  # podSecurityContext:
+  #   runAsNonRoot: true
+  #   runAsUser: 1000
+  #   seccompProfile:
+  #     type: RuntimeDefault
+  # securityContext:
+  #   allowPrivilegeEscalation: false
+  #   capabilities:
+  #     drop: [ALL]
+  # initContainer:
+  #   securityContext:
+  #     allowPrivilegeEscalation: false
+  #     capabilities:
+  #       drop: [ALL]
+  securityContext: {}
 
 # extraArgs to add args to the cloudprober container in order to add cloudprober flags
 # extraArgs:
