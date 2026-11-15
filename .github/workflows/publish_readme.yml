@@ -33,4 +33,11 @@ jobs:
           git config user.name "Manu Garg"
           git config user.email "manugarg@gmail.com"
           git commit -m "[automated] Update helm charts repo" || exit 0
-          git push
+          # The chart release also pushes to gh-pages. If it got there first,
+          # rebase onto it and retry; the two never touch the same files.
+          for attempt in 1 2 3 4 5; do
+            git push origin HEAD:gh-pages && exit 0
+            sleep $((attempt * 5))
+            git pull --rebase origin gh-pages
+          done
+          exit 1

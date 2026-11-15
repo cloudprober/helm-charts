@@ -12,6 +12,9 @@ jobs:
   update-chart-yaml:
     name: Update chart version and release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
     steps:
       - name: Check out repo hosting code
         uses: actions/checkout@v3
@@ -37,6 +40,7 @@ jobs:
           git diff
 
       - name: Commit and push Chart.yaml if it changed
+        id: push
         if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags')
         run: |-
           git config user.name "Manu Garg"
@@ -44,3 +48,12 @@ jobs:
           git add cloudprober/Chart.yaml
           git commit -m "[automated] Update app version" || exit 0
           git push
+          echo "pushed=true" >> $GITHUB_OUTPUT
+
+      # Pushes made with GITHUB_TOKEN don't trigger other workflows, so start
+      # the release explicitly. workflow_dispatch is exempt from that rule.
+      - name: Release the new app version
+        if: steps.push.outputs.pushed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run lint_and_release.yml --ref main
