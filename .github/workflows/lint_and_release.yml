@@ -19,6 +19,9 @@ jobs:
         uses: azure/setup-helm@v3
       - name: Run helm lint
         run: helm lint cloudprober/.
+      # Catches packaging errors on PRs, before a release hits them.
+      - name: Package chart (dry run)
+        run: helm package cloudprober/. -d "$RUNNER_TEMP"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
@@ -47,17 +50,49 @@ jobs:
   # Releases on every push to main that changes what the chart ships, unless
   # the commit title contains "[no release]". Changes held back that way ship
   # with the next release. workflow_dispatch releases any pending changes and
-  # ignores the marker.
+  # ignores the marker. See CONTRIBUTING.md.
   #
-  # The chart version is computed here; contributors don't bump it.
-  # MAJOR.MINOR = Chart.yaml version MAJOR.MINOR + appVersion MAJOR.MINOR
-  # PATCH       = last release tag's PATCH in that MAJOR.MINOR + 1, else 0
-  chart-release:
-    name: Release chart
+  # The marker is checked here, outside chart-release's concurrency group.
+  # GitHub cancels a pending run in a group when a newer one queues, so a
+  # [no release] run must never enter the group and take the place of a
+  # pending run that should release.
+  release-decision:
+    name: Check release opt-out
     runs-on: ubuntu-latest
     needs: [helm-lint]
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    # Releases must not run in parallel: each one claims the next tag.
+    outputs:
+      release: ${{ steps.marker.outputs.release }}
+    steps:
+      - name: Check commit title for [no release]
+        id: marker
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |-
+          title=$(printf '%s\n' "$COMMIT_MESSAGE" | head -1)
+          if [[ "$EVENT_NAME" == "push" && "$title" == *"[no release]"* ]]; then
+            echo ">> Commit title has [no release], skipping"
+            echo "release=false" >> $GITHUB_OUTPUT
+          else
+            echo "release=true" >> $GITHUB_OUTPUT
+          fi
+
+  # The chart version is computed here; contributors don't bump it.
+  # MAJOR.MINOR = Chart.yaml version MAJOR.MINOR + appVersion MAJOR.MINOR
+  # PATCH       = last release tag's PATCH in that MAJOR.MINOR + 1, else 0
+  #
+  # Every step is safe to re-run: a commit that already has a release tag
+  # reuses it, and anything already published is left as is, because
+  # helm package output isn't byte-for-byte reproducible.
+  chart-release:
+    name: Release chart
+    runs-on: ubuntu-latest
+    needs: [release-decision]
+    if: needs.release-decision.outputs.release == 'true'
+    # Releases must not run in parallel: each one claims the next tag. A run
+    # that replaces a cancelled pending one still diffs against the latest
+    # tag, so it ships the cancelled run's changes too.
     concurrency:
       group: chart-release
       cancel-in-progress: false
@@ -70,19 +105,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Decide release and compute chart version
+      - name: Compute chart version
         id: version
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |-
-          title=$(printf '%s\n' "$COMMIT_MESSAGE" | head -1)
-          if [[ "$EVENT_NAME" == "push" && "$title" == *"[no release]"* ]]; then
-            echo ">> Commit title has [no release], skipping"
-            echo "release=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
           baseVersion=$(sed -n 's/^version: //p' cloudprober/Chart.yaml)
           appVersion=$(sed -n 's/^appVersion: //p' cloudprober/Chart.yaml | tr -d "'\"v ")
           bv=( ${baseVersion//./ } )
@@ -90,10 +115,11 @@ jobs:
           line="$((${bv[0]} + ${cv[0]})).$((${bv[1]} + ${cv[1]}))"
           echo ">> Base version: $baseVersion, app version: $appVersion, line: $line"
 
-          # A re-run of a release that already tagged this commit reuses its tag.
+          # A re-run of a release that already tagged this commit reuses its
+          # tag, and publishes only what's missing.
           existing=$(git tag --points-at HEAD | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
           if [[ -n "$existing" ]]; then
-            echo ">> HEAD is already tagged $existing, re-publishing it"
+            echo ">> HEAD is already tagged $existing, publishing anything missing"
             echo "release=true" >> $GITHUB_OUTPUT
             echo "tagged=true" >> $GITHUB_OUTPUT
             echo "CHART_VERSION=$existing" >> $GITHUB_ENV
@@ -127,7 +153,7 @@ jobs:
         uses: actions/github-script@v5
         with:
           script: |
-            github.rest.git.createRef({
+            await github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: 'refs/tags/${{ env.CHART_VERSION }}',
@@ -139,8 +165,13 @@ jobs:
         run: |-
           git worktree add repo gh-pages
           cd repo
-          helm package ../cloudprober/. --version=${CHART_VERSION} -d packages
-          helm repo index . --url https://helm.cloudprober.org
+          pkg=packages/cloudprober-${CHART_VERSION}.tgz
+          if [[ -f "$pkg" ]]; then
+            echo ">> $pkg is already published, not repackaging"
+          else
+            helm package ../cloudprober/. --version=${CHART_VERSION} -d packages
+            helm repo index . --url https://helm.cloudprober.org
+          fi
           git add *
           git status
 
@@ -152,10 +183,21 @@ jobs:
           git config user.name "Manu Garg"
           git config user.email "manugarg@gmail.com"
           git commit -m "[automated] Update helm charts repo" || exit 0
-          git push
+          # Publish Readme also pushes to gh-pages. If it got there first,
+          # rebase onto it and retry; the two never touch the same files.
+          for attempt in 1 2 3 4 5; do
+            git push origin HEAD:gh-pages && exit 0
+            sleep $((attempt * 5))
+            git pull --rebase origin gh-pages
+          done
+          exit 1
 
       - name: Push chart to GHCR (OCI)
         if: steps.version.outputs.release == 'true'
         run: |-
           helm registry login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-          helm push repo/packages/cloudprober-${CHART_VERSION}.tgz oci://ghcr.io/cloudprober/charts
+          if helm show chart oci://ghcr.io/cloudprober/charts/cloudprober --version "$CHART_VERSION" >/dev/null 2>&1; then
+            echo ">> $CHART_VERSION is already in GHCR, not pushing"
+          else
+            helm push repo/packages/cloudprober-${CHART_VERSION}.tgz oci://ghcr.io/cloudprober/charts
+          fi
