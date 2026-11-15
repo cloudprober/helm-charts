@@ -14,7 +14,9 @@ description: A Helm chart for Cloudprober
 
 type: application
 
-# Note that final chart is computed by adding up this version and appVersion.
+# Don't bump this. The release workflow computes the published version:
+# MAJOR.MINOR is this version's MAJOR.MINOR plus appVersion's, and PATCH
+# increments with each release.
 version: 1.0.24
 
 # Cloudprober release version

@@ -44,26 +44,23 @@ jobs:
         if: steps.list-changed.outputs.changed == 'true'
         run: ct install --chart-dirs . --target-branch ${{ github.event.repository.default_branch }}        
 
-  paths-filter:
-    name: Filter Chart.yaml
-    outputs:
-      charts_yaml_changing: ${{ steps.filter.outputs.chartYaml }}
-    runs-on: ubuntu-latest
-    needs: [helm-lint]
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            chartYaml:
-              - 'cloudprober/Chart.yaml'
-
+  # Releases on every push to main that changes what the chart ships, unless
+  # the commit title contains "[no release]". Changes held back that way ship
+  # with the next release. workflow_dispatch releases any pending changes and
+  # ignores the marker.
+  #
+  # The chart version is computed here; contributors don't bump it.
+  # MAJOR.MINOR = Chart.yaml version MAJOR.MINOR + appVersion MAJOR.MINOR
+  # PATCH       = last release tag's PATCH in that MAJOR.MINOR + 1, else 0
   chart-release:
     name: Release chart
     runs-on: ubuntu-latest
-    needs: [paths-filter, helm-lint]
-    if: needs.paths-filter.outputs.charts_yaml_changing == 'true'
+    needs: [helm-lint]
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    # Releases must not run in parallel: each one claims the next tag.
+    concurrency:
+      group: chart-release
+      cancel-in-progress: false
     permissions:
       contents: write
       packages: write
@@ -73,36 +70,61 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            chartYaml:
-              - 'cloudprober/Chart.yaml'
-
-      - name: Compute chart version
+      - name: Decide release and compute chart version
+        id: version
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |-
-          baseVersion=$(sed -n '/version: /s/version: //p' cloudprober/Chart.yaml)
-          echo ">> Base version: $baseVersion"
+          title=$(printf '%s\n' "$COMMIT_MESSAGE" | head -1)
+          if [[ "$EVENT_NAME" == "push" && "$title" == *"[no release]"* ]]; then
+            echo ">> Commit title has [no release], skipping"
+            echo "release=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          baseVersion=$(sed -n 's/^version: //p' cloudprober/Chart.yaml)
+          appVersion=$(sed -n 's/^appVersion: //p' cloudprober/Chart.yaml | tr -d "'\"v ")
           bv=( ${baseVersion//./ } )
+          cv=( ${appVersion//./ } )
+          line="$((${bv[0]} + ${cv[0]})).$((${bv[1]} + ${cv[1]}))"
+          echo ">> Base version: $baseVersion, app version: $appVersion, line: $line"
 
-          appVersion=$(sed -n '/appVersion: /s/appVersion: //p' cloudprober/Chart.yaml)
-          echo ">> App version: $appVersion"
-          cpVersion=${appVersion/v/}
-          cpVersion=$(echo $cpVersion | tr -d "'")
-          echo ">> Cloudprober version: $cpVersion"
-          cv=( ${cpVersion//./ } )
+          # A re-run of a release that already tagged this commit reuses its tag.
+          existing=$(git tag --points-at HEAD | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          if [[ -n "$existing" ]]; then
+            echo ">> HEAD is already tagged $existing, re-publishing it"
+            echo "release=true" >> $GITHUB_OUTPUT
+            echo "tagged=true" >> $GITHUB_OUTPUT
+            echo "CHART_VERSION=$existing" >> $GITHUB_ENV
+            exit 0
+          fi
 
-          newVersion=$((${bv[0]} + ${cv[0]})).$((${bv[1]} + ${cv[1]})).$((${bv[2]} + ${cv[2]}))
+          lastTag=$(git tag --list '[0-9]*.[0-9]*.[0-9]*' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          echo ">> Last release: ${lastTag:-none}"
+          # Only changes to what the chart ships count; CI values and the
+          # helm test hook don't affect installs.
+          if [[ -n "$lastTag" ]] && git diff --quiet "$lastTag" HEAD -- cloudprober \
+              ':(exclude)cloudprober/ci' ':(exclude)cloudprober/templates/tests'; then
+            echo ">> No chart changes since $lastTag, skipping"
+            echo "release=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          lastPatch=$(git tag --list "$line.*" | grep -E "^${line//./\\.}\.[0-9]+$" | sed "s/^$line\.//" | sort -n | tail -1)
+          newVersion="$line.$(( ${lastPatch:--1} + 1 ))"
           echo ">> New version: $newVersion"
-          echo "CHART_VERSION=${newVersion}" >> $GITHUB_ENV
+          echo "release=true" >> $GITHUB_OUTPUT
+          echo "tagged=false" >> $GITHUB_OUTPUT
+          echo "CHART_VERSION=$newVersion" >> $GITHUB_ENV
 
       - name: Set up Helm
+        if: steps.version.outputs.release == 'true'
         uses: azure/setup-helm@v3
 
       - name: Create tag
+        if: steps.version.outputs.release == 'true' && steps.version.outputs.tagged != 'true'
         uses: actions/github-script@v5
-        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags')
         with:
           script: |
             github.rest.git.createRef({
@@ -113,6 +135,7 @@ jobs:
             })
 
       - name: Package chart and build index
+        if: steps.version.outputs.release == 'true'
         run: |-
           git worktree add repo gh-pages
           cd repo
@@ -122,7 +145,7 @@ jobs:
           git status
 
       - name: Push release
-        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags')
+        if: steps.version.outputs.release == 'true'
         run: |-
           cd repo
           git add *
@@ -132,7 +155,7 @@ jobs:
           git push
 
       - name: Push chart to GHCR (OCI)
-        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags')
+        if: steps.version.outputs.release == 'true'
         run: |-
           helm registry login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
           helm push repo/packages/cloudprober-${CHART_VERSION}.tgz oci://ghcr.io/cloudprober/charts
