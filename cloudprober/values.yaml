@@ -327,6 +327,9 @@ extraContainers: ''
 # a map or a YAML string, and is rendered with tpl, so it can use release
 # values. A literal {{ }}, such as a Go template in a cloudprober config, must
 # be escaped as {{`{{ ... }}`}}.
+# A checksum of all the rendered objects is added to the pod template, so any
+# change to extraObjects restarts the pods (checksumOverride does not disable
+# this).
 extraObjects: []
 # extraObjects:
 #   - apiVersion: v1
