@@ -36,6 +36,9 @@ spec:
           {{- toYaml .Values.podAnnotations | nindent 8 }}
         {{- end }}
         checksum/config: {{ .Values.checksumOverride | default (include (print $.Template.BasePath "/configmap.yaml") . | sha256sum) }}
+        {{- if .Values.extraObjects }}
+        checksum/extra-objects: {{ include (print $.Template.BasePath "/extra-objects.yaml") . | sha256sum }}
+        {{- end }}
       labels:
         {{- if $.Values.podLabels }}
           {{- toYaml .Values.podLabels | nindent 8 }}
